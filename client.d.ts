@@ -10,6 +10,9 @@ export namespace achievement {
   export function activate(achievement: string): boolean
   export function isActivated(achievement: string): boolean
   export function clear(achievement: string): boolean
+  export function getAchievementDisplayAttribute(achievement: string, key: string): string
+  export function getAchievementAchievedPercent(achievement: string): number
+  export function getAchievementIcon(achievement: string): Array<number> | null
 }
 export namespace apps {
   export function isSubscribedApp(appId: number): boolean
@@ -26,14 +29,6 @@ export namespace apps {
   export function availableGameLanguages(): Array<string>
   export function currentGameLanguage(): string
   export function currentBetaName(): string | null
-}
-export namespace auth {
-  /** @param timeoutSeconds - The number of seconds to wait for the ticket to be validated. Default value is 10 seconds. */
-  export function getSessionTicket(timeoutSeconds?: number | undefined | null): Promise<Ticket>
-  export class Ticket {
-    cancel(): void
-    getBytes(): Buffer
-  }
 }
 export namespace callback {
   export const enum SteamCallback {
@@ -53,31 +48,6 @@ export namespace callback {
     disconnect(): void
   }
 }
-export namespace cloud {
-  export function isEnabledForAccount(): boolean
-  export function isEnabledForApp(): boolean
-  export function readFile(name: string): string
-  export function writeFile(name: string, content: string): boolean
-  export function deleteFile(name: string): boolean
-  export function fileExists(name: string): boolean
-}
-export namespace input {
-  export interface AnalogActionVector {
-    x: number
-    y: number
-  }
-  export function init(): void
-  export function getControllers(): Array<Controller>
-  export function getActionSet(actionSetName: string): bigint
-  export function getDigitalAction(actionName: string): bigint
-  export function getAnalogAction(actionName: string): bigint
-  export function shutdown(): void
-  export class Controller {
-    activateActionSet(actionSetHandle: bigint): void
-    isDigitalActionPressed(actionHandle: bigint): boolean
-    getAnalogActionVector(actionHandle: bigint): AnalogActionVector
-  }
-}
 export namespace localplayer {
   export function getSteamId(): PlayerSteamId
   export function getName(): string
@@ -85,74 +55,6 @@ export namespace localplayer {
   /** @returns the 2 digit ISO 3166-1-alpha-2 format country code which client is running in, e.g. "US" or "UK". */
   export function getIpCountry(): string
   export function setRichPresence(key: string, value?: string | undefined | null): void
-}
-export namespace matchmaking {
-  export const enum LobbyType {
-    Private = 0,
-    FriendsOnly = 1,
-    Public = 2,
-    Invisible = 3
-  }
-  export function createLobby(lobbyType: LobbyType, maxMembers: number): Promise<Lobby>
-  export function joinLobby(lobbyId: bigint): Promise<Lobby>
-  export function getLobbies(): Promise<Array<Lobby>>
-  export class Lobby {
-    id: bigint
-    join(): Promise<Lobby>
-    leave(): void
-    openInviteDialog(): void
-    getMemberCount(): bigint
-    getMemberLimit(): bigint | null
-    getMembers(): Array<PlayerSteamId>
-    getOwner(): PlayerSteamId
-    setJoinable(joinable: boolean): boolean
-    getData(key: string): string | null
-    setData(key: string, value: string): boolean
-    deleteData(key: string): boolean
-    /** Get an object containing all the lobby data */
-    getFullData(): Record<string, string>
-    /**
-     * Merge current lobby data with provided data in a single batch
-     * @returns true if all data was set successfully
-     */
-    mergeFullData(data: Record<string, string>): boolean
-  }
-}
-export namespace networking {
-  export interface P2PPacket {
-    data: Buffer
-    size: number
-    steamId: PlayerSteamId
-  }
-  /** The method used to send a packet */
-  export const enum SendType {
-    /**
-     * Send the packet directly over udp.
-     *
-     * Can't be larger than 1200 bytes
-     */
-    Unreliable = 0,
-    /**
-     * Like `Unreliable` but doesn't buffer packets
-     * sent before the connection has started.
-     */
-    UnreliableNoDelay = 1,
-    /**
-     * Reliable packet sending.
-     *
-     * Can't be larger than 1 megabyte.
-     */
-    Reliable = 2,
-    /**
-     * Like `Reliable` but applies the nagle
-     * algorithm to packets being sent
-     */
-    ReliableWithBuffering = 3
-  }
-  export function sendP2PPacket(steamId64: bigint, sendType: SendType, data: Buffer): boolean
-  export function isP2PPacketAvailable(): number
-  export function readP2PPacket(size: number): P2PPacket
-  export function acceptP2PSession(steamId64: bigint): void
 }
 export namespace overlay {
   export const enum Dialog {
@@ -174,12 +76,6 @@ export namespace overlay {
   export function activateInviteDialog(lobbyId: bigint): void
   export function activateToWebPage(url: string): void
   export function activateToStore(appId: number, flag: StoreFlag): void
-}
-export namespace stats {
-  export function getInt(name: string): number | null
-  export function setInt(name: string, value: number): boolean
-  export function store(): boolean
-  export function resetAll(achievementsToo: boolean): boolean
 }
 export namespace utils {
   export function getAppId(): number

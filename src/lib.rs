@@ -21,6 +21,12 @@ pub fn init(app_id: Option<u32>) -> Result<(), Error> {
         .map_err(|e| Error::from_reason(e.to_string()))?;
 
     steam_client.user_stats().request_current_stats();
+    steam_client.user_stats().request_global_achievement_percentages(move|result|{
+        match result {
+            Ok(id) => println!("GlobalAchievementPercentagesReady callback recieved for AppId {:?}",id),
+            Err(err) => eprintln!("Error calling RequestGlobalAchievementPercentages: {:?}",err),
+        }
+    });
 
     client::set_client(steam_client);
     client::set_single(steam_single);
