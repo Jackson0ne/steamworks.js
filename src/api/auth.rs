@@ -33,7 +33,9 @@ pub mod auth {
         let (tx, rx) = oneshot::channel();
         let mut tx = Some(tx);
 
-        let (ticket_handle, ticket) = client.user().authentication_session_ticket();
+        let id = client.user().steam_id();
+
+        let (ticket_handle, ticket) = client.user().authentication_session_ticket(id.into());
         let callback =
             client.register_callback(move |session_ticket_response: AuthSessionTicketResponse| {
                 if session_ticket_response.ticket == ticket_handle {
