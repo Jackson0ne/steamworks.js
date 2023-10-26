@@ -65,4 +65,22 @@ pub mod achievement {
             .expect(&format!("Failed to get achievement icon for {}",&achievement))
         )
     }
+
+    #[napi]
+    pub fn get_num_achievements() -> u32 {
+        let client = crate::client::get_client();
+        client
+            .user_stats()
+            .get_num_achievements()
+            .expect("Failed to get number of achievements")
+    }
+
+    #[napi]
+    pub fn get_achievement_names() -> Vec<String> {
+        let client = crate::client::get_client();
+        client
+            .user_stats()
+            .get_achievement_names()
+            .expect(&format!("Failed to get achievement names for AppId {}",client.utils().app_id().0))
+    }
 }
